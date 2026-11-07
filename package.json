@@ -1,0 +1,61 @@
+{
+  "name": "easy-qqbot-harness",
+  "version": "0.2.1-beta",
+  "private": false,
+  "description": "给 QQ 开放平台机器人用的本地控制台 + AI 对话框架：人格、记忆、资料库、相册、语音、定时任务，一个网页全配置。",
+  "type": "module",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "start": "node src/cli.js serve",
+    "bot": "node src/cli.js start",
+    "dev": "node --watch src/cli.js serve",
+    "test": "node --test",
+    "verify": "node scripts/verify.mjs",
+    "release:check": "node scripts/release-check.mjs"
+  },
+  "dependencies": {
+    "express": "^5.1.0",
+    "ws": "^8.18.3",
+    "zod": "^4.1.12"
+  },
+  "license": "MIT",
+  "keywords": [
+    "qq",
+    "bot",
+    "qqbot",
+    "harness",
+    "ai",
+    "agent",
+    "openai",
+    "anthropic",
+    "minimax",
+    "deepseek",
+    "console",
+    "sqlite"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JonHu1024/easy-qqbot-harness-beta.git"
+  },
+  "bugs": {
+    "url": "https://github.com/JonHu1024/easy-qqbot-harness-beta/issues"
+  },
+  "homepage": "https://github.com/JonHu1024/easy-qqbot-harness-beta#readme",
+  "author": "easy-qqbot-harness contributors",
+  "files": [
+    "src",
+    "public",
+    "scripts",
+    "docs",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md",
+    "CONTRIBUTING.md",
+    "SECURITY.md"
+  ],
+  "publishConfig": {
+    "access": "public"
+  }
+}

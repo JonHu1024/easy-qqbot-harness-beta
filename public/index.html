@@ -1,0 +1,684 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>easy-qqbot-harness 控制台</title>
+  <link rel="icon" type="image/png" href="/assets/icon-64.png">
+  <link rel="apple-touch-icon" href="/assets/icon-192.png">
+  <link rel="stylesheet" href="/style.css">
+  <script src="/app.js" defer></script>
+</head>
+<body>
+  <svg class="icon-defs" aria-hidden="true" focusable="false">
+    <defs>
+      <symbol id="i-overview" viewBox="0 0 24 24"><rect x="3" y="3" width="7.5" height="7.5" rx="1.6"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="1.6"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="1.6"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="1.6"/></symbol>
+      <symbol id="i-plug" viewBox="0 0 24 24"><path d="M9 3v5M15 3v5"/><path d="M6 8h12v3a6 6 0 0 1-6 6 6 6 0 0 1-6-6z"/><path d="M12 17v4"/></symbol>
+      <symbol id="i-model" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1"/></symbol>
+      <symbol id="i-voice" viewBox="0 0 24 24"><path d="M12 3.5a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0v-5a3 3 0 0 0-3-3z"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0"/><path d="M12 17.5V21"/></symbol>
+      <symbol id="i-persona" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.6"/><path d="M9 10.2h.01M15 10.2h.01"/><path d="M8.6 14.4a4.6 4.6 0 0 0 6.8 0"/></symbol>
+      <symbol id="i-reply" viewBox="0 0 24 24"><path d="M9 14 4 9l5-5"/><path d="M4 9h9a7 7 0 0 1 7 7v4"/></symbol>
+      <symbol id="i-terminal" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2.4"/><path d="M7 9.2l3 2.8-3 2.8M13.2 15h4"/></symbol>
+      <symbol id="i-book" viewBox="0 0 24 24"><path d="M4 4.6A2.6 2.6 0 0 1 6.6 2H20v16.4H6.6A2.6 2.6 0 0 0 4 21z"/><path d="M20 18.4V22H6.6A2.6 2.6 0 0 1 4 19.4"/></symbol>
+      <symbol id="i-folder" viewBox="0 0 24 24"><path d="M3 7.6 12 3.2l9 4.4-9 4.4z"/><path d="M3 7.6V16l9 4.4 9-4.4V7.6"/><path d="M12 12v8.4"/></symbol>
+      <symbol id="i-image" viewBox="0 0 24 24"><rect x="3" y="4.4" width="18" height="15.2" rx="2.2"/><circle cx="8.6" cy="9.8" r="1.6"/><path d="M3.6 17.4 8.6 12l4.2 4.2 3-2.6 4.6 3.8"/></symbol>
+      <symbol id="i-spark" viewBox="0 0 24 24"><path d="M12 3v3.5M12 17.5V21M4.2 7.2l2.5 2.5M17.3 14.3l2.5 2.5M3 12h3.5M17.5 12H21M4.2 16.8l2.5-2.5M17.3 9.7l2.5-2.5"/><circle cx="12" cy="12" r="3"/></symbol>
+      <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.6"/><path d="M12 7.4V12l3.2 2"/></symbol>
+      <symbol id="i-logs" viewBox="0 0 24 24"><path d="M5 6.5h14M5 12h14M5 17.5h9"/></symbol>
+    </defs>
+  </svg>
+
+  <div id="login-panel" class="login-screen" hidden>
+    <form id="login-form" class="card login-card">
+      <img class="login-logo" src="/assets/icon-192.png" alt="easy-qqbot-harness">
+      <p class="eyebrow">EASY QQBOT HARNESS</p>
+      <h1>登录控制台</h1>
+      <p>输入服务器配置的管理密码。QQ 机器人密钥不是管理密码。</p>
+      <label>管理密码<input id="login-password" type="password" autocomplete="current-password" required></label>
+      <button type="submit" class="primary">登录</button>
+      <p id="login-feedback" class="feedback" role="alert"></p>
+    </form>
+  </div>
+
+  <div id="console" hidden>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="brand">
+          <img class="brand-mark" src="/assets/icon-64.png" alt="">
+          <span class="brand-text"><strong>easy-qqbot</strong><small>harness 控制台</small></span>
+        </div>
+        <nav class="sidebar-nav" aria-label="控制台栏目">
+          <div class="nav-group">
+            <p class="nav-group-label">总览</p>
+            <button type="button" data-tab="overview" class="active" aria-current="page"><svg class="icon" aria-hidden="true"><use href="#i-overview"/></svg><span>概览</span></button>
+          </div>
+          <div class="nav-group">
+            <p class="nav-group-label">接入</p>
+            <button type="button" data-tab="connection"><svg class="icon" aria-hidden="true"><use href="#i-plug"/></svg><span>QQ 接入</span></button>
+            <button type="button" data-tab="models"><svg class="icon" aria-hidden="true"><use href="#i-model"/></svg><span>模型接入</span></button>
+            <button type="button" data-tab="voice"><svg class="icon" aria-hidden="true"><use href="#i-voice"/></svg><span>语音</span></button>
+          </div>
+          <div class="nav-group">
+            <p class="nav-group-label">机器人</p>
+            <button type="button" data-tab="persona"><svg class="icon" aria-hidden="true"><use href="#i-persona"/></svg><span>人格</span></button>
+            <button type="button" data-tab="reply"><svg class="icon" aria-hidden="true"><use href="#i-reply"/></svg><span>回复策略</span></button>
+            <button type="button" data-tab="commands"><svg class="icon" aria-hidden="true"><use href="#i-terminal"/></svg><span>命令与规则</span></button>
+            <button type="button" data-tab="memory"><svg class="icon" aria-hidden="true"><use href="#i-book"/></svg><span>会话记忆</span></button>
+          </div>
+          <div class="nav-group">
+            <p class="nav-group-label">Harness</p>
+            <button type="button" data-tab="capabilities"><svg class="icon" aria-hidden="true"><use href="#i-spark"/></svg><span>能力</span></button>
+            <button type="button" data-tab="resources"><svg class="icon" aria-hidden="true"><use href="#i-folder"/></svg><span>资料库</span></button>
+            <button type="button" data-tab="memes"><svg class="icon" aria-hidden="true"><use href="#i-image"/></svg><span>表情包</span></button>
+            <button type="button" data-tab="tasks"><svg class="icon" aria-hidden="true"><use href="#i-clock"/></svg><span>定时任务</span></button>
+          </div>
+          <div class="nav-group">
+            <p class="nav-group-label">运行</p>
+            <button type="button" data-tab="storage"><svg class="icon" aria-hidden="true"><use href="#i-folder"/></svg><span>数据文件</span></button>
+            <button type="button" data-tab="logs"><svg class="icon" aria-hidden="true"><use href="#i-logs"/></svg><span>运行日志</span></button>
+          </div>
+        </nav>
+        <div class="sidebar-foot">
+          <button type="button" id="logout" hidden>退出登录</button>
+          <p class="sidebar-note">设置只在点击「保存配置」后生效</p>
+          <p class="sidebar-note" id="app-version">easy-qqbot-harness</p>
+        </div>
+      </aside>
+
+      <div class="app-main">
+        <header class="topbar">
+          <div class="topbar-title">
+            <p class="eyebrow" id="page-eyebrow">概览</p>
+            <h1 id="page-title">机器人控制台</h1>
+            <p class="page-sub" id="page-sub">先填写并保存凭据，再检查连接、启动。</p>
+          </div>
+          <div class="topbar-status">
+            <span class="chip"><span class="chip-label">机器人</span><strong id="top-bot-name">—</strong></span>
+            <span class="chip"><span class="chip-label">连接</span><span id="connection-status" class="badge idle">读取状态中</span></span>
+            <span class="chip"><span class="chip-label">消息 收/发/错</span><span id="top-counts">—</span></span>
+            <span class="chip"><span class="chip-label">待回复</span><span id="top-pending">—</span></span>
+          </div>
+          <div class="topbar-actions">
+            <span id="save-state" class="save-state">正在读取配置…</span>
+            <button type="button" id="reload-config" class="ghost">重新读取</button>
+            <button type="button" id="export-config" class="ghost">导出</button>
+            <button type="button" id="import-config" class="ghost">导入</button>
+            <button type="button" id="save-config" class="primary">保存配置</button>
+            <input id="import-file" type="file" accept="application/json,.json" hidden>
+          </div>
+        </header>
+
+        <p id="feedback" class="feedback global-feedback" role="status" aria-live="polite"></p>
+
+        <main>
+          <!-- ============================ 概览 ============================ -->
+          <section data-panel="overview" data-eyebrow="总览" data-title="机器人运行概况" data-sub="连接状态、消息计数与 Token 用量。">
+            <div class="section-heading">
+              <a href="https://q.qq.com/" target="_blank" rel="noopener noreferrer">QQ 开放平台 ↗</a>
+            </div>
+            <div class="card">
+              <div class="card-head"><h3>运行状态</h3><div class="button-row">
+                <button type="button" id="check-bot">检查凭据</button>
+                <button type="button" id="start-bot" class="primary">启动机器人</button>
+                <button type="button" id="stop-bot">停止机器人</button>
+                <button type="button" id="refresh-status" class="ghost">刷新</button>
+              </div></div>
+              <div class="stats-grid">
+                <div class="stat"><span>运行状态</span><strong id="status-state">—</strong></div>
+                <div class="stat"><span>收到 / 发出 / 错误</span><strong id="status-counts">—</strong></div>
+                <div class="stat"><span>运行时长</span><strong id="status-uptime">—</strong></div>
+                <div class="stat"><span>最近事件</span><strong id="status-event">—</strong></div>
+              </div>
+              <p id="status-error" class="error-text"></p>
+              <pre id="status-identity" class="result" hidden></pre>
+            </div>
+            <div class="card">
+              <div class="card-head">
+                <div><h3>Token 用量</h3><p class="hint">本机记录的模型用量与工具调用。提供方未返回 usage 的请求只能计次数，不会用估算值冒充 token。</p></div>
+                <div class="button-row"><button type="button" id="refresh-usage" class="ghost">刷新</button><button type="button" id="reset-usage" class="danger">重置统计</button></div>
+              </div>
+              <p id="usage-unknown" class="hint usage-warning" hidden></p>
+              <div id="usage-summary" class="usage-grid"><p class="empty">正在读取用量…</p></div>
+              <div class="usage-tables">
+                <div><h4>按模型 · Top</h4><div id="usage-models" class="usage-list"></div></div>
+                <div><h4>最近 14 天</h4><div id="usage-daily" class="usage-list"></div></div>
+              </div>
+              <p id="usage-timezone" class="hint"></p>
+              <p id="usage-feedback" class="feedback" role="status" aria-live="polite"></p>
+            </div>
+            <aside class="notice"><strong>三步上线</strong><ol class="notice-steps">
+              <li>在「QQ 接入」填 AppID / AppSecret 并保存。</li>
+              <li>在「模型接入」填模型接口与 Key（或改用规则模式）。</li>
+              <li>回到这里点「检查凭据」→「启动机器人」。</li></ol>
+              <a href="https://bot.q.qq.com/wiki/develop/api-v2/dev-prepare/getting-started.html" target="_blank" rel="noopener noreferrer">官方接入文档 ↗</a></aside>
+          </section>
+
+          <!-- ============================ QQ 接入 ============================ -->
+          <section data-panel="connection" data-eyebrow="接入" data-title="QQ 接入" data-sub="凭据、事件接入方式与订阅范围。修改前请先停止机器人。" hidden>
+            <div class="section-heading">
+              <a href="https://bot.q.qq.com/wiki/develop/api-v2/dev-prepare/event-emit/payload.html" target="_blank" rel="noopener noreferrer">官方事件文档 ↗</a>
+            </div>
+            <div class="card config-card">
+              <h3>应用凭据</h3>
+              <div class="form-grid">
+                <label>App ID<input data-config="qq.appId" autocomplete="off" placeholder="在开放平台创建机器人后获取"></label>
+                <div class="field-block">
+                  <label>App Secret<input data-config="qq.appSecret" type="password" autocomplete="new-password" placeholder="留空保留已有密钥"></label>
+                  <span id="qq-secret-hint" class="hint"></span>
+                  <label class="switch"><input id="clear-qq-secret" type="checkbox"><span class="switch-text">明确清除已保存密钥</span></label>
+                </div>
+              </div>
+              <h4>接入方式</h4>
+              <div class="form-grid">
+                <label>事件接入方式<select data-config="qq.transport"><option value="websocket">WebSocket 长连接（推荐）</option><option value="webhook">Webhook 公网回调</option></select></label>
+                <label class="switch"><input data-config="qq.sandbox" type="checkbox"><span class="switch-text"><strong>使用沙箱环境</strong><small>仅在平台提供相应资格时开启</small></span></label>
+                <label class="wide">事件订阅 intents<input data-config="qq.intents" type="number" min="0" max="2147483647" step="1" required><span class="hint">各事件位相加；下面的勾选框只调整对应位，保留其他事件位。</span></label>
+              </div>
+              <h4>事件订阅</h4>
+              <div id="intent-options" class="checks">
+                <label class="switch"><input type="checkbox" data-intent="33554432"><span class="switch-text">群聊与 QQ 单聊 · 2²⁵</span></label>
+                <label class="switch"><input type="checkbox" data-intent="1073741824"><span class="switch-text">频道 @ 消息 · 2³⁰</span></label>
+                <label class="switch"><input type="checkbox" data-intent="4096"><span class="switch-text">频道私信 · 2¹²</span></label>
+                <label class="switch"><input type="checkbox" data-intent="512"><span class="switch-text">频道全部消息（私域权限）· 2⁹</span></label>
+                <label class="switch"><input type="checkbox" data-intent="1"><span class="switch-text">频道变更 · 2⁰</span></label>
+                <label class="switch"><input type="checkbox" data-intent="2"><span class="switch-text">频道成员 · 2¹</span></label>
+              </div>
+              <p class="hint">凭据、环境、接入方式与 intents 只能在机器人停止时更改。无权限的事件订阅会导致网关关闭，不要勾选尚未开通的事件。</p>
+            </div>
+            <aside class="notice"><strong>平台接入须知</strong><ul>
+              <li>凭据有效不等于有全部权限：需在开放平台开通单聊 / 群聊 / 频道场景，并配置测试成员或发布机器人。</li>
+              <li>Webhook 必须配置公网 HTTPS 地址 <code>https://你的域名/qq/webhook</code>；官方允许回调端口 80 / 443 / 8080 / 8443。</li>
+              <li>主动消息、被动回复的 msg_id / event_id、回复时限、条数与频率均受平台限制。</li></ul></aside>
+          </section>
+
+          <!-- ============================ 模型接入 ============================ -->
+          <section data-panel="models" data-eyebrow="接入" data-title="模型接入" data-sub="聊天模型与图片 / 视频生成模型。生成服务支持多种接入方式。" hidden>
+            <div class="section-heading"></div>
+            <div class="card config-card">
+              <div class="card-head"><div><h3>聊天模型</h3><p class="hint">OpenAI 兼容或 Anthropic Messages 两种协议。对话内容会发送给你配置的服务。</p></div>
+                <button type="button" id="test-chat" class="ghost">测试连接</button></div>
+              <div class="form-grid">
+                <label>API 基础地址<input data-config="llm.baseUrl" type="url" placeholder="https://api.openai.com/v1" required></label>
+                <label>接口协议<select data-config="llm.apiFormat"><option value="auto">自动判断</option><option value="openai">OpenAI 兼容</option><option value="anthropic">Anthropic Messages</option></select></label>
+                <label>模型名称<input data-config="llm.model" placeholder="服务商提供的模型 ID"></label>
+                <div class="field-block">
+                  <label>模型 API Key<input data-config="llm.apiKey" type="password" autocomplete="new-password" placeholder="留空保留已有密钥"></label>
+                  <span id="llm-secret-hint" class="hint"></span>
+                  <label class="switch"><input id="clear-llm-secret" type="checkbox"><span class="switch-text">明确清除已保存密钥</span></label>
+                </div>
+                <label>随机度 temperature<input data-config="llm.temperature" type="number" min="0" max="2" step="0.05" required></label>
+                <label>最大生成 token<input data-config="llm.maxTokens" type="number" min="256" max="131072" step="1" required><span class="hint">思考型模型要留够额度，否则只吐思考过程、没有正文（建议 8192 起）</span></label>
+                <label>推理强度<select data-config="llm.reasoningEffort">
+                  <option value="off">不限制（自己决定）</option>
+                  <option value="minimal">极低</option>
+                  <option value="low">低（推荐）</option>
+                  <option value="medium">中</option>
+                  <option value="high">高</option>
+                </select><span class="hint">思考型模型不限制会耗光输出额度，只吐思考过程、没有正文</span></label>
+                <label>超时（毫秒）<input data-config="llm.timeoutMs" type="number" min="1000" max="180000" step="1" required></label>
+              </div>
+              <p id="test-chat-result" class="feedback" role="status"></p>
+              <p class="hint">程序会追加 <code>/chat/completions</code>（OpenAI）或 <code>/messages</code>（Anthropic）。自动判断按地址识别：含 anthropic.com 或 claude 走 Anthropic，其余走 OpenAI。规则模式下不需要模型凭据。</p>
+            </div>
+            <div class="card config-card">
+              <div class="card-head"><div><h3>图片 / 视频生成</h3><p class="hint">不同服务的接入方式差别很大，这里提供三种，按需选择。</p></div>
+                <div class="button-row"><button type="button" id="test-image" class="ghost">测试生图</button><button type="button" id="test-video" class="ghost">测试生视频</button></div></div>
+              <div class="form-grid">
+                <label>接入方式<select data-config="harness.genMode"><option value="agnes">内置技能 · Agnes</option><option value="openai">OpenAI 兼容 API</option><option value="custom">自定义 HTTP 接口</option></select></label>
+                <label>生图模型名称<input data-config="harness.imageModel" maxlength="200" required placeholder="agnes-image-2.5-flash"></label>
+              </div>
+              <div id="gen-standard" class="gen-mode">
+                <div class="form-grid">
+                  <label>生成接口地址<input data-config="harness.genBaseUrl" type="url" maxlength="2000" placeholder="内置技能留空即用 https://apihub.agnes-ai.com/v1"></label>
+                  <div class="field-block">
+                    <label>生成 API Key<input data-config="harness.genApiKey" type="password" autocomplete="new-password" placeholder="留空保留已有密钥"></label>
+                    <span id="gen-secret-hint" class="hint"></span>
+                    <label class="switch"><input id="clear-gen-secret" type="checkbox"><span class="switch-text">明确清除已保存密钥</span></label>
+                  </div>
+                  <label>生视频模型<input data-config="harness.videoModel" maxlength="200" required placeholder="agnes-video-2.5-flash"></label>
+                  <label>视频时长（秒）<input data-config="harness.videoSeconds" type="number" min="1" max="60" step="1" required></label>
+                </div>
+                <p class="hint" id="gen-standard-hint">内置技能自带异步任务轮询与字段兼容处理。Key 留空时沿用聊天模型的 Key —— <strong>聊天模型不是 Agnes 时请单独填写</strong>。</p>
+              </div>
+              <div id="gen-custom" class="gen-mode" hidden>
+                <div class="form-grid">
+                  <label class="wide">请求地址<input data-config="harness.genCustomUrl" type="url" maxlength="2000" placeholder="https://…/generate"><span class="hint">可用占位符：{{prompt}} {{size}} {{duration}} {{model}}</span></label>
+                  <label>请求方法<select data-config="harness.genCustomMethod"><option value="POST">POST</option><option value="GET">GET</option></select></label>
+                  <label>结果取值路径<input data-config="harness.genCustomPath" maxlength="200" placeholder="data.0.url"><span class="hint">按 . 分层，支持数组下标</span></label>
+                  <label class="wide">请求体模板（JSON）<textarea data-config="harness.genCustomBody" rows="5" spellcheck="false" placeholder='{"prompt":"{{prompt}}","size":"{{size}}"}'></textarea></label>
+                  <label class="wide">附加请求头（JSON，可选）<textarea data-config="harness.genCustomHeaders" rows="3" spellcheck="false" placeholder='{"X-Token":"..."}'></textarea></label>
+                </div>
+                <p class="hint">适用于 Replicate / 硅基流动 / 豆包 / 即梦这类各自为政的服务。响应里取到的地址或 Base64 会直接作为生成结果使用；生图与生视频用同一套模板，靠 {{model}} 与 {{duration}} 区分。</p>
+              </div>
+              <p id="test-gen-result" class="feedback" role="status"></p>
+            </div>
+          </section>
+
+
+          <!-- ============================ 语音 ============================ -->
+          <section data-panel="voice" data-eyebrow="接入" data-title="语音" data-sub="把文字读出来。可以走合成接口，也可以直接用 Windows 自带的语音。" hidden>
+            <div class="card config-card">
+              <div class="card-head"><div><h3>语音开关</h3><p class="hint">开启后机器人可以用 <code>/语音 内容</code> 发语音，模型也能主动调用 speak 工具。</p></div>
+                <div class="button-row">
+                  <label class="switch"><input data-config="harness.ttsEnabled" type="checkbox"><span class="switch-text"><strong>启用语音合成</strong></span></label>
+                  <button type="button" id="test-voice" class="ghost">测试语音</button>
+                </div></div>
+              <div class="form-grid three">
+                <label>接入方式<select data-config="harness.ttsMode"><option value="off">不使用语音</option><option value="api">合成接口</option><option value="windows">Windows 系统语音</option></select></label>
+                <label>输出格式<select data-config="harness.ttsFormat"><option value="auto">自动（优先 mp3）</option><option value="mp3">mp3</option><option value="wav">wav</option><option value="ogg">ogg</option><option value="silk">silk（需 ffmpeg）</option></select></label>
+                <label>单条语音最长字数<input data-config="harness.ttsMaxChars" type="number" min="10" max="2000" step="1" required><span class="hint">超出部分会被截断</span></label>
+                <label class="switch"><input data-config="harness.ttsAutoSend" type="checkbox"><span class="switch-text"><strong>回答后自动附带语音</strong><small>把正文再读一遍</small></span></label>
+              </div>
+              <p id="test-voice-result" class="feedback" role="status"></p>
+            </div>
+
+            <div id="tts-api" class="tts-mode" hidden>
+              <div class="card config-card">
+                <div class="card-head"><div><h3>合成接口</h3><p class="hint">按服务商的协议选；不确定就先看「服务预设」。</p></div>
+                  <div class="button-row">
+                    <label>服务预设<select id="tts-preset">
+                      <option value="">自定义（不填预设）</option>
+                      <option value="minimax">MiniMax</option>
+                      <option value="openai">OpenAI</option>
+                      <option value="azure">Azure OpenAI</option>
+                    </select></label>
+                    <label>接口协议<select data-config="harness.ttsApiFormat"><option value="auto">自动判断（推荐）</option><option value="openai">OpenAI 兼容</option><option value="minimax">MiniMax T2A</option><option value="custom">自定义 HTTP</option></select><span class="hint">MiniMax 没有 OpenAI 兼容的语音接口，选「自动判断」最省事</span></label>
+                  </div></div>
+                <div id="tts-api-common">
+                  <div class="form-grid">
+                    <label class="wide">接口地址<input data-config="harness.ttsBaseUrl" type="url" maxlength="2000" placeholder="https://api.minimax.cn"><span class="hint">MiniMax 会拼成 {地址}/v1/t2a_v2；OpenAI 会拼成 {地址}/audio/speech。填到 /v1 也可以</span></label>
+                    <div class="field-block">
+                      <label>API Key<input data-config="harness.ttsApiKey" type="password" autocomplete="new-password" placeholder="留空保留已有密钥"></label>
+                      <span id="tts-secret-hint" class="hint"></span>
+                      <label class="switch"><input id="clear-tts-secret" type="checkbox"><span class="switch-text">明确清除已保存密钥</span></label>
+                    </div>
+                    <label>模型名称<input data-config="harness.ttsModel" maxlength="200" required placeholder="speech-2.8-hd"><span class="hint">MiniMax：speech-2.8-hd / speech-2.8-turbo / speech-02-hd；OpenAI：tts-1</span></label>
+                    <label>音色<input data-config="harness.ttsVoice" maxlength="200" placeholder="male-qn-qingse"><span class="hint">MiniMax 填 voice_id；OpenAI 填 alloy / nova / shimmer</span></label>
+                    <label>语速<input data-config="harness.ttsSpeed" type="number" min="0.25" max="4" step="0.05" required></label>
+                  </div>
+                  <div class="button-row spaced" id="tts-voice-picker-row" hidden><button type="button" id="load-service-voices" class="ghost">读取服务音色</button><span class="hint">从服务商账号里列出可用的音色 ID</span></div>
+                  <div id="tts-api-minimax" hidden>
+                    <div class="form-grid">
+                      <label>音量（0.1 – 10）<input data-config="harness.ttsVolume" type="number" min="0.1" max="10" step="0.1" required></label>
+                      <label>音高（-12 – 12）<input data-config="harness.ttsPitch" type="number" min="-12" max="12" step="1" required></label>
+                    </div>
+                    <p class="hint">MiniMax 的语音接口是 <code>/v1/t2a_v2</code>，和 OpenAI 的 <code>/audio/speech</code> 不是一回事；返回的音频是十六进制编码，程序已自动解码。失败时它仍返回 HTTP 200，真实错误藏在 <code>base_resp.status_code</code> 里，程序会翻译成可读的中文。</p>
+                  </div>
+                </div>
+                <div id="tts-api-custom" hidden>
+                  <div class="form-grid">
+                    <label class="wide">请求地址<input data-config="harness.ttsCustomUrl" type="url" maxlength="2000" placeholder="https://…/tts"><span class="hint">可用占位符：{{text}} {{voice}} {{model}} {{speed}}</span></label>
+                    <label>请求方法<select data-config="harness.ttsCustomMethod"><option value="POST">POST</option><option value="GET">GET</option></select></label>
+                    <label>结果取值路径<input data-config="harness.ttsCustomPath" maxlength="200" placeholder="data.0.url"><span class="hint">留空表示响应体直接就是音频；按 . 分层，支持数组下标</span></label>
+                    <label class="wide">请求体模板（JSON）<textarea data-config="harness.ttsCustomBody" rows="5" spellcheck="false" placeholder='{"text":"{{text}}","voice":"{{voice}}"}'></textarea></label>
+                    <label class="wide">附加请求头（JSON，可选）<textarea data-config="harness.ttsCustomHeaders" rows="3" spellcheck="false" placeholder='{"X-Token":"..."}'></textarea></label>
+                  </div>
+                  <p class="hint">响应里的音频可以是<strong>地址</strong>、<strong>Base64</strong> 或 <strong>十六进制</strong>，程序会自动识别。</p>
+              </div>
+            </div>
+
+            <div id="tts-windows" class="tts-mode" hidden>
+              <div class="card config-card">
+                <div class="card-head"><div><h3>Windows 系统语音</h3><p class="hint">调用系统自带的 SAPI 引擎（PowerShell + System.Speech），不联网、不需要密钥。</p></div>
+                  <button type="button" id="load-voices" class="ghost">读取系统音色</button></div>
+                <div class="form-grid">
+                  <label>系统音色<select id="tts-voice-select"><option value="">（未选择，使用系统默认）</option></select></label>
+                  <label>语速（-10 ~ 10）<input data-config="harness.ttsWindowsRate" type="number" min="-10" max="10" step="1" required></label>
+                  <label>音量（0 ~ 100）<input data-config="harness.ttsWindowsVolume" type="number" min="0" max="100" step="1" required></label>
+                  <label class="wide">音色名称（手填也可以）<input data-config="harness.ttsWindowsVoice" maxlength="200" placeholder="Microsoft Huihui Desktop"></label>
+                </div>
+                <p id="voice-list-feedback" class="feedback" role="status"></p>
+                <p class="hint">Windows 语音只在 <strong>Windows</strong> 上可用；本机没装 PowerShell 时会明确报错。合成结果为 16kHz 单声道 wav，QQ 直接接受。</p>
+              </div>
+            </div>
+
+            <aside class="notice"><strong>关于语音消息</strong><ul>
+              <li>QQ 的语音消息是富媒体（file_type=3），接受 <code>silk / mp3 / wav / ogg</code>。</li>
+              <li>转成 mp3 / ogg 需要本机装 <code>ffmpeg</code>；没有也能用 wav，只是文件大一些。</li>
+              <li>语音只支持 QQ 单聊与群聊；频道和频道私信发不了。</li>
+              <li>被动回复的名额有限：正文加语音会占掉一条，文字太多时程序会先合并正文腾位置。</li></ul></aside>
+          </section>
+
+          <!-- ============================ 人格 ============================ -->
+          <section data-panel="persona" data-eyebrow="机器人" data-title="人格" data-sub="名字、性格、底线与访问控制。" hidden>
+            <div class="section-heading"></div>
+            <div class="card config-card">
+              <h3>机器人个性</h3>
+              <div class="form-grid">
+                <label>机器人名称<input data-config="bot.name" required maxlength="100"></label>
+                <label>回复模式<select data-config="bot.mode"><option value="rules">命令 / 规则优先，无匹配则兜底文本</option><option value="llm">命令 / 规则优先，无匹配则交给模型</option></select></label>
+                <label class="switch"><input data-config="bot.enabled" type="checkbox"><span class="switch-text"><strong>开启自动回复</strong><small>关闭后只处理命令，不自动回复消息</small></span></label>
+                <label class="wide">人格 / 系统提示词<textarea data-config="bot.persona" rows="6" maxlength="20000" placeholder="你是谁、语气如何、可以做什么、哪些内容不要回答"></textarea></label>
+                <label class="wide">反抗提示词<textarea data-config="bot.defiance" rows="4" maxlength="4000" placeholder="遇到不合理的要求时怎么回应"></textarea><span class="hint">让机器人保留自己的判断，不做无条件顺从的传声筒。留空表示完全顺从。</span></label>
+                <label class="wide">兜底回复<textarea data-config="bot.fallback" rows="2" maxlength="12000"></textarea></label>
+                <label class="wide">欢迎语<textarea data-config="bot.welcome" rows="2" maxlength="4000" placeholder="留空不发送；用于 FRIEND_ADD / GROUP_ADD_ROBOT 事件"></textarea></label>
+              </div>
+              <p class="hint">文本模板可用 <code>{user}</code> 用户 ID、<code>{name}</code> 机器人名、<code>{args}</code> 命令参数、<code>{time}</code> 当前时间。</p>
+            </div>
+            <div class="card config-card">
+              <h3>访问控制</h3>
+              <div class="form-grid">
+                <label>允许用户 ID<textarea data-config="bot.allowUsers" data-list rows="3" placeholder="留空允许所有用户；每行一个 ID"></textarea></label>
+                <label>拒绝用户 ID<textarea data-config="bot.denyUsers" data-list rows="3" placeholder="每行一个 ID"></textarea></label>
+                <label>允许目标 ID<textarea data-config="bot.allowTargets" data-list rows="3" placeholder="留空允许所有目标；每行一个群、频道或会话 ID"></textarea></label>
+                <label>管理员用户 ID<textarea data-config="bot.admins" data-list rows="3" placeholder="每行一个 ID；用于管理员专属命令"></textarea></label>
+              </div>
+            </div>
+          </section>
+
+          <!-- ============================ 回复策略 ============================ -->
+          <section data-panel="reply" data-eyebrow="机器人" data-title="回复策略" data-sub="长度、节奏、长文、工具与自动回复场景。" hidden>
+            <div class="section-heading"></div>
+            <div class="card config-card">
+              <h3>长度与条数</h3>
+              <div class="form-grid three">
+                <label>每次回复最多条数<input data-config="bot.replyCount" type="number" min="1" max="5" step="1" required></label>
+                <label>目标最少字数<input data-config="bot.minChars" type="number" min="0" max="4000" step="1" required></label>
+                <label>每条目标字数上限<input data-config="bot.maxChars" type="number" min="1" max="4000" step="1" required></label>
+              </div>
+              <p class="hint">字数是软目标，允许自然略超；过长回答会再次精简，不机械截字。QQ 单聊最多 4 条、群聊最多 5 条，单条硬上限 4000 字符。</p>
+            </div>
+            <div class="card config-card">
+              <h3>节奏</h3>
+              <div class="form-grid three">
+                <label>首次回复延迟（毫秒）<input data-config="bot.firstReplyDelayMs" type="number" min="0" max="30000" step="100" required><span class="hint">收到消息后先等这么久再回答</span></label>
+                <label>消息合并窗口（毫秒）<input data-config="bot.mergeWindowMs" type="number" min="0" max="30000" step="100" required><span class="hint">窗口内收到的多条消息合并成一次回答</span></label>
+                <label>多条回复之间的间隔（毫秒）<input data-config="bot.replyDelayMs" type="number" min="0" max="10000" step="100" required></label>
+                <label>用户冷却时间（毫秒）<input data-config="bot.cooldownMs" type="number" min="0" max="60000" step="100" required></label>
+                <label class="switch"><input data-config="harness.naturalDelay" type="checkbox"><span class="switch-text"><strong>自然停顿</strong><small>多条回复之间随机抖动</small></span></label>
+                <label class="switch"><input data-config="harness.splitLines" type="checkbox"><span class="switch-text"><strong>按换行拆分消息</strong><small>一条消息一行，推荐开启</small></span></label>
+                <label class="switch"><input data-config="harness.typingEnabled" type="checkbox"><span class="switch-text"><strong>输出中通知</strong><small>QQ 单聊显示「正在输入」</small></span></label>
+                <label class="switch"><input data-config="harness.pokeEnabled" type="checkbox"><span class="switch-text"><strong>响应戳一戳</strong><small>被戳时按场景回一句</small></span></label>
+              </div>
+              <p class="hint"><strong>首次回复延迟</strong>让机器人不再「秒回」：用户在窗口内连续发多条消息时，程序会把它们合并成一次提问再交给模型。斜杠命令不等待，立即回应。</p>
+            </div>
+            <div class="card config-card">
+              <h3>长文与工具</h3>
+              <div class="form-grid three">
+                <label class="switch"><input data-config="harness.longReplyEnabled" type="checkbox"><span class="switch-text"><strong>允许按需长文</strong><small>按会话冷却，避免刷屏</small></span></label>
+                <label>长文冷却（分钟）<input data-config="harness.longReplyCooldownMinutes" type="number" min="1" max="10080" step="1" required></label>
+                <label>长文目标字数上限<input data-config="harness.longReplyMaxChars" type="number" min="100" max="4000" step="1" required></label>
+                <label>最多工具交互轮数<input data-config="harness.maxToolRounds" type="number" min="1" max="20" step="1" required><span class="hint">上限 20；超过 8 轮会在日志里给出警告</span></label>
+                <label class="switch"><input data-config="harness.retryEnabled" type="checkbox"><span class="switch-text"><strong>模型失败重试</strong><small>5 / 8 / 10 秒退避</small></span></label>
+              </div>
+            </div>
+            <div class="card config-card">
+              <h3>记忆与场景</h3>
+              <div class="form-grid three">
+                <label>上下文轮数<input data-config="bot.historyTurns" type="number" min="0" max="100" step="1" required></label>
+                <label>记忆保留天数<input data-config="bot.memoryDays" type="number" min="1" max="3650" step="1" required></label>
+                <label class="switch"><input data-config="bot.memoryEnabled" type="checkbox"><span class="switch-text"><strong>启用会话记忆</strong><small>群聊 / 频道的记忆是群内共享的</small></span></label>
+              </div>
+              <h4>自动回复场景</h4>
+              <div class="checks" id="reply-scenes">
+                <label class="switch"><input type="checkbox" value="c2c"><span class="switch-text">QQ 单聊</span></label>
+                <label class="switch"><input type="checkbox" value="group"><span class="switch-text">QQ 群聊</span></label>
+                <label class="switch"><input type="checkbox" value="channel"><span class="switch-text">频道</span></label>
+                <label class="switch"><input type="checkbox" value="dm"><span class="switch-text">频道私信</span></label>
+              </div>
+            </div>
+          </section>
+
+          <!-- ============================ 命令与规则 ============================ -->
+          <section data-panel="commands" data-eyebrow="机器人" data-title="命令与规则" data-sub="自定义斜杠命令与关键词规则，改动后保存生效。" hidden>
+            <div class="section-heading"></div>
+            <div class="card config-card">
+              <div class="card-head"><h3>斜杠命令</h3><button type="button" id="add-command">＋ 添加命令</button></div>
+              <p class="hint">用户输入 <code>/命令 参数</code>。文本回复支持 {user} / {name} / {args} / {time}；模型类回复作为本次命令的模型指令。</p>
+              <div id="command-list" class="table-wrap">
+                <table class="data-table">
+                  <thead><tr><th scope="col">命令</th><th scope="col">说明</th><th scope="col">回复类型</th><th scope="col">回复内容</th><th scope="col">启用</th><th scope="col">仅管理员</th><th scope="col">操作</th></tr></thead>
+                  <tbody id="command-rows"></tbody>
+                </table>
+              </div>
+              <p id="commands-empty" class="empty">还没有自定义命令，点击「添加命令」。内置 /帮助 仍可使用。</p>
+            </div>
+            <div class="card config-card">
+              <div class="card-head"><h3>关键词规则</h3><button type="button" id="add-rule">＋ 添加规则</button></div>
+              <div id="rule-list" class="table-wrap">
+                <table class="data-table">
+                  <thead><tr><th scope="col">关键词</th><th scope="col">匹配方式</th><th scope="col">回复文本</th><th scope="col">启用</th><th scope="col">操作</th></tr></thead>
+                  <tbody id="rule-rows"></tbody>
+                </table>
+              </div>
+              <p id="rules-empty" class="empty">还没有规则。可先添加「你好」→「你好，我是{name}」。</p>
+            </div>
+          </section>
+
+          <!-- ============================ 会话记忆 ============================ -->
+          <section data-panel="memory" data-eyebrow="机器人" data-title="会话记忆" data-sub="每个会话就是一个 session：可以重命名、查看长期事实、导出与删除。" hidden>
+            <div class="section-heading">
+              <button type="button" id="refresh-memory">刷新列表</button>
+            </div>
+            <div class="card config-card">
+              <h3>记忆策略</h3>
+              <div class="form-grid three">
+                <label class="switch"><input data-config="harness.autoMemory" type="checkbox"><span class="switch-text"><strong>自动记住稳定事实</strong><small>只保存用户明确提供的信息</small></span></label>
+                <label class="switch"><input data-config="harness.profileLookup" type="checkbox"><span class="switch-text"><strong>自动查询用户昵称</strong><small>群聊 / 频道可查到真实昵称</small></span></label>
+                <label>昵称缓存时长（分钟）<input data-config="harness.profileCacheMinutes" type="number" min="1" max="1440" step="1" required></label>
+              </div>
+              <p class="hint">QQ 官方只在群成员与频道成员接口里提供昵称；<strong>单聊（c2c）没有查询昵称的接口</strong>，只能拿到 OpenID。用户可用 <code>/昵称 名字</code> 自行登记，你也可以在这里给会话起个名字。</p>
+            </div>
+            <div class="memory-grid">
+              <div class="card">
+                <label>筛选会话<input id="memory-filter" placeholder="昵称、名称、场景或会话键"></label>
+                <div id="conversation-list" class="conversation-list table-wrap">
+                  <table class="data-table">
+                    <thead><tr><th scope="col">会话</th><th scope="col">条数</th><th scope="col">最近</th></tr></thead>
+                    <tbody id="conversation-rows"></tbody>
+                  </table>
+                </div>
+                <p id="memory-empty" class="empty">暂无会话。QQ 里收到消息后会自动出现在这里。</p>
+              </div>
+              <div class="card">
+                <div class="card-head"><h3 id="memory-title">请选择一个会话</h3>
+                  <div class="button-row" id="memory-actions" hidden>
+                    <button type="button" id="rename-session" class="tiny">重命名</button>
+                    <button type="button" id="export-session" class="tiny">导出</button>
+                    <button type="button" id="delete-memory" class="tiny danger">删除</button>
+                  </div>
+                </div>
+                <p id="memory-key" class="hint"></p>
+                <div id="memory-detail" hidden>
+                  <label>长期事实<textarea id="memory-facts" rows="5" placeholder="例如：用户偏好简洁中文回答"></textarea></label>
+                  <p id="facts-state" class="hint"></p>
+                  <div class="button-row"><button type="button" id="save-facts" class="primary">保存事实</button><button type="button" id="consolidate-facts">让模型整理</button></div>
+                  <h4>会话历史</h4>
+                  <div id="memory-history" class="history"></div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- ============================ 能力 ============================ -->
+          <section data-panel="capabilities" data-eyebrow="Harness" data-title="能力" data-sub="多模态输入、沙箱浏览、联网搜索与生图生视频的开关。" hidden>
+            <div class="section-heading"></div>
+            <div class="card config-card">
+              <h3>多模态输入</h3>
+              <div class="form-grid three">
+                <label class="switch"><input data-config="harness.visionEnabled" type="checkbox"><span class="switch-text"><strong>图片识别</strong><small>需要视觉模型支持</small></span></label>
+                <label class="switch"><input data-config="harness.filesEnabled" type="checkbox"><span class="switch-text"><strong>读取文件附件</strong><small>文本 / PDF / 表格等</small></span></label>
+                <label class="switch"><input data-config="harness.pdfFileParts" type="checkbox"><span class="switch-text"><strong>PDF 直传</strong><small>仅当接口支持 file 片段</small></span></label>
+                <label>每次附件总大小（MB）<input data-config="harness.maxAttachmentMB" type="number" min="1" max="20" step="1" required></label>
+                <label>附件入库上限（MB）<input data-config="harness.maxStorageMB" type="number" min="1" max="64" step="1" required></label>
+                <label>每次最多图片数<input data-config="harness.maxImages" type="number" min="1" max="10" step="1" required></label>
+              </div>
+              <p class="hint">PDF 默认在本地提取文字层后只发送提取到的文字；扫描件请改发图片。接口拒绝附件片段时会自动降级为只发元数据并写进警告。</p>
+            </div>
+            <div class="card config-card">
+              <h3>沙箱浏览</h3>
+              <div class="form-grid">
+                <label class="switch"><input data-config="harness.shellEnabled" type="checkbox"><span class="switch-text"><strong>允许模型用命令浏览资料库与表情包</strong><small>只读虚拟文件系统，不执行任何系统命令</small></span></label>
+                <label class="switch"><input data-config="harness.fileOutputEnabled" type="checkbox"><span class="switch-text"><strong>允许模型生成文件并发给你</strong><small>整理成 txt / md / csv，存进资料库并作为附件发送</small></span></label>
+              </div>
+              <p class="hint">开启后模型可以用 <code>ls</code>、<code>find</code>、<code>cat</code>、<code>grep</code> 这些命令查看资料库和表情包到底有哪些文件，
+                先列目录再决定读哪一个，不用再靠猜文件名（猜错会白白浪费一轮）。
+                沙箱里只有 <code>/files</code>（机器人自己存的东西）和 <code>/memes</code>（表情包）两个目录，<strong>不能写、不能删、不能联网</strong>。</p>
+            </div>
+            <div class="card config-card">
+              <h3>联网搜索</h3>
+              <div class="form-grid three">
+                <label class="switch"><input data-config="harness.searchEnabled" type="checkbox"><span class="switch-text"><strong>允许模型联网搜索</strong><small>免费公开来源，无需密钥</small></span></label>
+                <label>搜索来源<select data-config="harness.searchProvider"><option value="auto">自动（必应 → DuckDuckGo → 维基百科）</option><option value="bing">仅必应（国内网络更稳）</option><option value="duckduckgo">仅 DuckDuckGo</option><option value="wikipedia">仅维基百科</option></select></label>
+                <label>最多搜索条数<input data-config="harness.searchResults" type="number" min="1" max="10" step="1" required></label>
+                <label class="switch"><input data-config="harness.readUrlEnabled" type="checkbox"><span class="switch-text"><strong>允许模型读取网页正文</strong><small>仅公网 HTTP(S)</small></span></label>
+              </div>
+            </div>
+            <div class="card config-card">
+              <h3>生成</h3>
+              <div class="form-grid">
+                <label class="switch"><input data-config="harness.imageGenEnabled" type="checkbox"><span class="switch-text"><strong>允许模型生成图片</strong><small>接入方式在「模型接入」里选</small></span></label>
+                <label class="switch"><input data-config="harness.genUseReference" type="checkbox"><span class="switch-text"><strong>拍新照片时参考相册里的自己</strong><small>图生图，脸型、发型能对得上</small></span></label>
+                <label class="switch"><input data-config="harness.videoGenEnabled" type="checkbox"><span class="switch-text"><strong>允许模型生成视频</strong><small>可能按量计费</small></span></label>
+                <label class="switch"><input data-config="harness.autoApproveJoin" type="checkbox"><span class="switch-text"><strong>自动通过入群申请</strong><small>需要机器人具备审批权限</small></span></label>
+              </div>
+            </div>
+          </section>
+
+          <!-- ============================ 资料库 ============================ -->
+          <section data-panel="resources" data-eyebrow="Harness" data-title="资料库" data-sub="每个资料夹是一个文件夹，DOC.md 说明什么时候该读它、里面大概有什么。" hidden>
+            <div class="section-heading">
+              <div class="button-row">
+                <button type="button" id="toggle-all-folders" class="ghost">全部折叠</button>
+                <button type="button" id="refresh-resources">刷新列表</button>
+              </div>
+            </div>
+            <div class="card config-card">
+              <h3>资料库策略</h3>
+              <div class="form-grid three">
+                <label class="switch"><input data-config="harness.resourcesEnabled" type="checkbox"><span class="switch-text"><strong>允许模型使用资料库</strong><small>关闭后模型完全看不到资料</small></span></label>
+                <label class="switch"><input data-config="harness.resourceImageEnabled" type="checkbox"><span class="switch-text"><strong>资料夹里的图片送给模型</strong><small>读到图片文件时一并附上</small></span></label>
+                <label>单条内容读取字数上限<input data-config="harness.resourceMaxChars" type="number" min="100" max="8000" step="1" required></label>
+                <label>一次提示几个资料夹<input data-config="harness.resourceAutoInject" type="number" min="0" max="5" step="1" required><span class="hint">0 表示只靠模型自己列目录</span></label>
+              </div>
+              <p class="hint">Harness 只负责<strong>提示</strong>：命中触发条件时把资料夹的触发条件与概述告诉模型，读不读、读哪几个由模型自己判断。模型可用 <code>list_resources</code> 列目录、<code>read_resource</code> 取内容。</p>
+            </div>
+            <div class="card">
+              <div class="card-head"><h3 id="folder-form-title">新建资料夹</h3>
+                <div class="button-row"><button type="button" id="folder-new" class="ghost">＋ 新建</button><button type="button" id="folder-cancel" hidden>取消编辑</button></div></div>
+              <form id="folder-form">
+                <div class="form-grid">
+                  <label>资料夹名称<input id="folder-name" required maxlength="80" placeholder="例如：产品资料"></label>
+                  <label>触发内容<input id="folder-trigger" maxlength="4000" placeholder="用户问价格、优惠、套餐时"><span class="hint">什么情况下该读这个文件夹</span></label>
+                  <label class="wide">内容概述<textarea id="folder-summary" rows="3" maxlength="4000" placeholder="这个文件夹里大概有什么：定价表、常见问题、售后政策…"></textarea></label>
+                </div>
+                <div class="button-row spaced"><button type="submit" id="folder-save" class="primary">保存资料夹</button></div>
+                <p id="folder-feedback" class="feedback" role="status"></p>
+              </form>
+            </div>
+            <div id="folder-list" class="folder-list"></div>
+            <p id="folders-empty" class="empty">还没有资料夹。建一个文件夹，写清楚什么时候该读它，再把资料放进去。</p>
+          </section>
+
+          <!-- ============================ 表情包 ============================ -->
+          <section data-panel="memes" data-eyebrow="Harness" data-title="表情包" data-sub="图片 + 名字，名字就是表情的意思。" hidden>
+            <div class="section-heading">
+              <button type="button" id="refresh-memes">刷新列表</button>
+            </div>
+            <div class="card config-card">
+              <h3>表情策略</h3>
+              <div class="form-grid three">
+                <label class="switch"><input data-config="harness.emojiFaces" type="checkbox"><span class="switch-text"><strong>允许模型使用 QQ 表情</strong><small>文本里的 Unicode emoji</small></span></label>
+                <label class="switch"><input data-config="harness.memesEnabled" type="checkbox"><span class="switch-text"><strong>允许模型挑选表情包</strong><small>在正文之后额外发一张图</small></span></label>
+                <label>表情包使用概率（0–1）<input data-config="harness.memeChance" type="number" min="0" max="1" step="any" required></label>
+              </div>
+              <p class="hint">Unicode emoji 始终可用，不依赖任何图片素材。图片表情包是可选增强，只占用正文之后的剩余回复名额，正文优先。</p>
+            </div>
+            <div class="card">
+              <div class="card-head"><h3 id="meme-form-title">添加表情</h3>
+                <div class="button-row"><button type="button" id="meme-new" class="ghost">＋ 新增</button><button type="button" id="meme-cancel" hidden>取消编辑</button></div></div>
+              <form id="meme-form">
+                <div class="form-grid">
+                  <label>表情含义<input id="meme-name" required maxlength="40" placeholder="例如：无奈、点赞、庆祝"></label>
+                  <label>公网 HTTPS 图片 URL<input id="meme-url" type="url" placeholder="与本地上传二选一"></label>
+                  <label>本地图片（最大 2 MB）<input id="meme-file" type="file" accept="image/png,image/jpeg,image/gif,image/webp"><span class="hint">仅 PNG / JPEG / GIF / WebP</span></label>
+                </div>
+                <div class="button-row spaced"><button type="submit" id="meme-save" class="primary">保存表情</button></div>
+                <p id="meme-feedback" class="feedback" role="status"></p>
+              </form>
+            </div>
+            <div id="meme-list" class="asset-grid"></div>
+            <p id="memes-empty" class="empty">还没有表情包。名字写清楚表情的意思，模型就能挑对。</p>
+          </section>
+
+          <!-- ============================ 定时任务 ============================ -->
+          <section data-panel="tasks" data-eyebrow="Harness" data-title="定时任务" data-sub="手工创建或由模型创建的提醒，执行后自动清理。" hidden>
+            <div class="section-heading">
+              <button type="button" id="refresh-tasks">刷新列表</button>
+            </div>
+            <div class="card config-card">
+              <h3>任务策略</h3>
+              <div class="form-grid three">
+                <label class="switch"><input data-config="harness.modelTasks" type="checkbox"><span class="switch-text"><strong>允许模型创建提醒</strong><small>模型可创建 / 取消定时任务</small></span></label>
+                <label class="switch"><input data-config="harness.tasksAutoCleanup" type="checkbox"><span class="switch-text"><strong>一次性任务完成后自动删除</strong><small>循环任务不受影响</small></span></label>
+                <label>历史保留天数<input data-config="harness.taskHistoryDays" type="number" min="0" max="365" step="1" required></label>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-head"><h3 id="task-form-title">创建任务</h3>
+                <div class="button-row"><button type="button" id="task-new" class="ghost">＋ 新建</button><button type="button" id="task-cancel" hidden>取消编辑</button></div></div>
+              <form id="task-form">
+                <div class="form-grid three">
+                  <label>标题<input id="task-title" required maxlength="200"></label>
+                  <label>场景<select id="task-scene"><option value="preview">本地 preview（不发送 QQ）</option><option value="c2c">QQ 单聊</option><option value="group">QQ 群聊</option><option value="channel">频道</option><option value="dm">频道私信</option></select></label>
+                  <label>目标 ID<input id="task-target" required maxlength="200" placeholder="本地 local / QQ 场景目标 ID"></label>
+                  <label>所属用户 ID<input id="task-user" required maxlength="200" placeholder="本地 tester / QQ 用户 openid"></label>
+                  <label>下次执行时间<input id="task-due" type="datetime-local" step="1" required></label>
+                  <label>重复间隔（秒，0 为单次）<input id="task-interval" type="number" min="0" max="31536000" step="1" value="0" required></label>
+                  <label class="wide">提醒文本<textarea id="task-content" rows="3" required maxlength="4000"></textarea></label>
+                </div>
+                <div class="button-row spaced"><button type="submit" id="task-save" class="primary">创建任务</button></div>
+                <p id="task-feedback" class="feedback" role="status"></p>
+              </form>
+            </div>
+            <aside class="notice">QQ 任务会向真实目标发送主动消息，需要平台权限且机器人在线。preview 任务仅写入本地会话，绝不发送 QQ。重复间隔以秒计（至少 60 秒）。</aside>
+            <div id="task-list" class="table-wrap">
+              <table class="data-table">
+                <thead><tr><th scope="col">标题 / 内容</th><th scope="col">目标</th><th scope="col">状态</th><th scope="col">时间</th><th scope="col">操作</th></tr></thead>
+                <tbody id="task-rows"></tbody>
+              </table>
+            </div>
+            <p id="tasks-empty" class="empty">点击刷新读取任务。</p>
+          </section>
+
+          <!-- ============================ 运行日志 ============================ -->
+          <section data-panel="storage" data-eyebrow="运行" data-title="数据文件" data-sub="所有数据都在这里：配置、会话、消息、资料库、表情包、提醒、日志、用量。备份就是复制整个目录。" hidden>
+            <div class="section-heading">
+              <div class="button-row"><button type="button" id="refresh-storage">刷新</button></div>
+            </div>
+            <div class="card">
+              <dl class="kv">
+                <dt>数据目录</dt><dd><code id="storage-dir">—</code></dd>
+                <dt>占用空间</dt><dd id="storage-total">—</dd>
+                <dt>备份方式</dt><dd>直接复制整个数据目录即可（含 <code>master.key</code>，否则密钥解不开）</dd>
+              </dl>
+              <div id="storage-files" class="file-list"></div>
+              <h4 style="margin-top:18px">数据库里各表有多少行</h4>
+              <div id="storage-tables" class="tag-row"></div>
+            </div>
+          </section>
+
+          <section data-panel="logs" data-eyebrow="运行" data-title="运行日志" data-sub="最近的服务日志，可按级别筛选与搜索。" hidden>
+            <div class="section-heading">
+              <div class="button-row"><button type="button" id="refresh-logs">刷新</button><button type="button" id="clear-logs" class="danger">清空日志</button></div>
+            </div>
+            <div class="card">
+              <div class="form-grid">
+                <label>日志级别<select id="log-level"><option value="">全部</option><option value="info">信息</option><option value="warn">警告</option><option value="error">错误</option><option value="debug">调试</option></select></label>
+                <label>搜索<input id="log-search" placeholder="消息、详细信息或 traceId"></label>
+              </div>
+              <div id="log-list" class="log-list"></div>
+              <p id="logs-empty" class="empty">暂无日志。</p>
+            </div>
+          </section>
+        </main>
+
+        <footer>设置只在点击「保存配置」后生效 · 导出不含密钥与会话记忆 · 请勿向不可信人员开放管理端</footer>
+      </div>
+    </div>
+  </div>
+
+  <div id="startup-error" class="card startup-error" hidden><h1>暂时无法加载控制台</h1><p id="startup-error-text" class="error-text"></p><button type="button" id="startup-retry">重试</button></div>
+</body>
+</html>
